@@ -295,10 +295,10 @@
     border-radius:clamp(10px,1.3vw,18px);-webkit-user-drag:none;
     box-shadow:0 1px 2px rgba(0,0,0,.22),0 8px 16px -6px rgba(0,0,0,.35),0 30px 50px -22px rgba(0,0,0,.6);
     transform-origin:50% 130%;transform:rotate(calc((var(--i) - 2.5) * 4deg));
-    transition:transform .35s cubic-bezier(.2,.8,.3,1),box-shadow .35s ease;
+    transition:transform .65s cubic-bezier(.22,1,.36,1),box-shadow .65s cubic-bezier(.22,1,.36,1);
   }
-  .fan img:hover{transform:rotate(calc((var(--i) - 2.5) * 4deg)) translateY(-9%);box-shadow:0 1px 2px rgba(0,0,0,.22),0 14px 24px -8px rgba(0,0,0,.4),0 44px 60px -24px rgba(0,0,0,.65)}
-  @media (hover:none){.fan img:hover{transform:rotate(calc((var(--i) - 2.5) * 4deg))}}
+  .fan.settled img:hover,html:not(.anim) .fan img:hover{transform:rotate(calc((var(--i) - 2.5) * 4deg)) translateY(-9%);box-shadow:0 1px 2px rgba(0,0,0,.22),0 14px 24px -8px rgba(0,0,0,.4),0 44px 60px -24px rgba(0,0,0,.65)}
+  @media (hover:none){.fan.settled img:hover,html:not(.anim) .fan img:hover{transform:rotate(calc((var(--i) - 2.5) * 4deg))}}
   .coll-name{font-family:"Inter",-apple-system,"Helvetica Neue",Arial,sans-serif;font-weight:700;font-size:clamp(30px,3.4vw,44px);letter-spacing:-.025em;line-height:1.05;margin:0}
   .coll-meta{margin:14px 0 0;font-size:15px;color:var(--muted)}
   .coll-dots{display:flex;gap:10px;margin-top:22px}
