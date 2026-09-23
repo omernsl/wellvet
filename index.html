@@ -273,12 +273,13 @@
   .fan{position:relative;display:block;width:100%;aspect-ratio:5/4;padding:0;border:0;background:none;cursor:pointer}
   .fan img{
     position:absolute;top:12%;left:calc(var(--i) * 14%);width:30%;height:auto;aspect-ratio:9/16;object-fit:cover;
-    border-radius:clamp(10px,1.3vw,18px);pointer-events:none;-webkit-user-drag:none;
+    border-radius:clamp(10px,1.3vw,18px);-webkit-user-drag:none;
     box-shadow:0 1px 2px rgba(0,0,0,.22),0 8px 16px -6px rgba(0,0,0,.35),0 30px 50px -22px rgba(0,0,0,.6);
     transform-origin:50% 130%;transform:rotate(calc((var(--i) - 2.5) * 4deg));
-    transition:transform .6s cubic-bezier(.2,.7,.3,1);
+    transition:transform .35s cubic-bezier(.2,.8,.3,1),box-shadow .35s ease;
   }
-  .fan:hover img,.fan:focus-visible img{transform:rotate(calc((var(--i) - 2.5) * 5.5deg)) translateY(-3%)}
+  .fan img:hover{transform:rotate(calc((var(--i) - 2.5) * 4deg)) translateY(-9%);box-shadow:0 1px 2px rgba(0,0,0,.22),0 14px 24px -8px rgba(0,0,0,.4),0 44px 60px -24px rgba(0,0,0,.65)}
+  @media (hover:none){.fan img:hover{transform:rotate(calc((var(--i) - 2.5) * 4deg))}}
   .coll-name{font-family:"Inter",-apple-system,"Helvetica Neue",Arial,sans-serif;font-weight:700;font-size:clamp(30px,3.4vw,44px);letter-spacing:-.025em;line-height:1.05;margin:0}
   .coll-meta{margin:14px 0 0;font-size:15px;color:var(--muted)}
   .coll-dots{display:flex;gap:10px;margin-top:22px}
@@ -360,7 +361,7 @@
         <h2>Expensive things have room around them.</h2>
         <p>Embroidered crests on undyed linen, made as phone wallpapers. Quiet enough to live behind your clock and icons every day.</p>
         <div class="cta">
-          <a class="btn buy" href="#rampant">Get The Rampant — $4.90</a>
+          <a class="btn buy" href="#rampant">Explore The Rampant</a>
         </div>
       </div>
       <figure class="device">
@@ -393,7 +394,7 @@
     <div class="craft">
       <div class="craft-row">
 <h3>Six wallpapers, one price</h3>
-        <p>Three thread colours — Olive, Oxblood and Navy — each in a light and a dark version. All six come together for $4.90.</p>
+        <p>Three thread colours — Olive, Oxblood and Navy — each in a light and a dark version. All six come together in one set.</p>
       </div>
       <div class="craft-row">
 <h3>Made for your phone</h3>
@@ -413,7 +414,7 @@
   <section class="wrap" id="collections">
     <div class="sec-head"><h2 class="big">Collections</h2></div>
     <article class="coll">
-      <button class="fan" type="button" data-open aria-label="Open The Rampant">
+      <button class="fan" type="button" data-open aria-label="Open The Rampant" oncontextmenu="return false">
         <img src="images/horse/rampant-olive-light.webp" alt="" draggable="false" style="--i:0">
         <img src="images/horse/rampant-oxblood-dark.webp" alt="" draggable="false" style="--i:1">
         <img src="images/horse/rampant-navy-light.webp" alt="" draggable="false" style="--i:2">
@@ -428,7 +429,6 @@
         <p class="coll-desc">A rearing horse embroidered on undyed linen, in Olive, Oxblood and Navy thread.</p>
         <div class="coll-cta">
           <button class="btn" type="button" data-open>View collection</button>
-          <span class="coll-price">$4.90</span>
         </div>
       </div>
     </article>
