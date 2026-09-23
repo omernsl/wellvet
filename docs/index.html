@@ -91,13 +91,6 @@
     -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
     -webkit-mask-composite:xor;mask-composite:exclude;
   }
-  /* specular sheen that follows the pointer */
-  .bar::after{
-    content:"";position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;
-    background:radial-gradient(180px 60px at var(--mx,30%) -10%,rgba(255,255,255,.35),rgba(255,255,255,0) 70%);
-    opacity:.55;transition:opacity .4s ease;
-  }
-  .bar:hover::after{opacity:1}
   .bar .mark{position:relative;z-index:3}
   .bar .mark{
     font-family:var(--display);font-weight:900;
@@ -653,10 +646,6 @@
   /* ================= motion ================= */
   (function(){
     var root=document.documentElement;
-    var bar=document.querySelector('.bar');
-    bar.addEventListener('pointermove',function(e){
-      var r=bar.getBoundingClientRect(); bar.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');
-    });
     if(!root.classList.contains('anim')) return;
 
     /* typewriter for Butler headings */
