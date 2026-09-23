@@ -290,15 +290,31 @@
   .coll{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(40px,6vw,96px);align-items:center}
   @media (max-width:820px){.coll{grid-template-columns:1fr}}
   .fan{position:relative;display:block;width:100%;aspect-ratio:5/4;padding:0;border:0;background:none;cursor:pointer}
-  .fan img{
-    position:absolute;top:12%;left:calc(var(--i) * 14%);width:30%;height:auto;aspect-ratio:9/16;object-fit:cover;
-    border-radius:clamp(10px,1.3vw,18px);-webkit-user-drag:none;
+  .fan .card{
+    position:absolute;display:block;top:12%;left:calc(var(--i) * 14%);width:30%;height:auto;aspect-ratio:9/16;object-fit:cover;
+    border-radius:clamp(10px,1.3vw,18px);
     box-shadow:0 1px 2px rgba(0,0,0,.22),0 8px 16px -6px rgba(0,0,0,.35),0 30px 50px -22px rgba(0,0,0,.6);
     transform-origin:50% 130%;transform:translateY(var(--y,0%)) rotate(calc((var(--i) - 2.5) * 4deg));
     transition:transform .65s cubic-bezier(.22,1,.36,1),box-shadow .65s cubic-bezier(.22,1,.36,1);
   }
-  .fan.settled img:hover,html:not(.anim) .fan img:hover{transform:translateY(calc(var(--y,0%) - 9%)) rotate(calc((var(--i) - 2.5) * 4deg));box-shadow:0 1px 2px rgba(0,0,0,.22),0 14px 24px -8px rgba(0,0,0,.4),0 44px 60px -24px rgba(0,0,0,.65)}
-  @media (hover:none){.fan.settled img:hover,html:not(.anim) .fan img:hover{transform:translateY(var(--y,0%)) rotate(calc((var(--i) - 2.5) * 4deg))}}
+  .fan .card img{display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit;pointer-events:none;-webkit-user-drag:none}
+  /* glass over print: a soft top sheen and an inner edge highlight */
+  .fan .card::before{
+    content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;
+    background:linear-gradient(160deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,0) 38%);
+    box-shadow:inset 0 1px 1px rgba(255,255,255,.35),inset 0 -1px 1px rgba(0,0,0,.25);
+  }
+  /* liquid-glass rim, same language as the pill */
+  .fan .card::after{
+    content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;z-index:2;
+    background:linear-gradient(135deg,rgba(255,255,255,.9) 0%,rgba(255,255,255,.15) 24%,rgba(255,255,255,0) 48%,rgba(255,255,255,0) 62%,rgba(255,255,255,.18) 84%,rgba(255,255,255,.7) 100%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;
+    opacity:.75;transition:opacity .65s cubic-bezier(.22,1,.36,1);
+  }
+  .fan.settled .card:hover::after,html:not(.anim) .fan .card:hover::after{opacity:1}
+  .fan.settled .card:hover,html:not(.anim) .fan .card:hover{transform:translateY(calc(var(--y,0%) - 9%)) rotate(calc((var(--i) - 2.5) * 4deg));box-shadow:0 1px 2px rgba(0,0,0,.22),0 14px 24px -8px rgba(0,0,0,.4),0 44px 60px -24px rgba(0,0,0,.65)}
+  @media (hover:none){.fan.settled .card:hover,html:not(.anim) .fan .card:hover{transform:translateY(var(--y,0%)) rotate(calc((var(--i) - 2.5) * 4deg))}}
   .coll-name{font-family:"Inter",-apple-system,"Helvetica Neue",Arial,sans-serif;font-weight:700;font-size:clamp(30px,3.4vw,44px);letter-spacing:-.025em;line-height:1.05;margin:0}
   .coll-meta{margin:14px 0 0;font-size:15px;color:var(--muted)}
   .coll-dots{display:flex;gap:10px;margin-top:22px}
@@ -379,8 +395,8 @@
   .caret.gone{opacity:0;transition:opacity .5s ease}
 
   /* fan deals out from a single deck */
-  html.anim .fan:not(.in) img{opacity:0;transform:translateX(calc((2.5 - var(--i)) * 46.7%)) translateY(14%) rotate(0deg)}
-  html.anim .fan:not(.settled) img{transition:transform 1.1s cubic-bezier(.16,.8,.24,1) calc(var(--i) * 90ms),opacity .7s ease calc(var(--i) * 90ms)}
+  html.anim .fan:not(.in) .card{opacity:0;transform:translateX(calc((2.5 - var(--i)) * 46.7%)) translateY(14%) rotate(0deg)}
+  html.anim .fan:not(.settled) .card{transition:transform 1.1s cubic-bezier(.16,.8,.24,1) calc(var(--i) * 90ms),opacity .7s ease calc(var(--i) * 90ms)}
 
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{transition-duration:.01ms!important;animation:none!important}
@@ -477,12 +493,12 @@
     <div class="sec-head"><h2 class="big">Collections</h2></div>
     <article class="coll">
       <button class="fan" type="button" data-open aria-label="Open The Rampant" oncontextmenu="return false">
-        <img src="images/horse/rampant-olive-light.webp" alt="" draggable="false" style="--i:0;--y:7%">
-        <img src="images/horse/rampant-oxblood-dark.webp" alt="" draggable="false" style="--i:1">
-        <img src="images/horse/rampant-navy-light.webp" alt="" draggable="false" style="--i:2">
-        <img src="images/horse/rampant-olive-dark.webp" alt="" draggable="false" style="--i:3">
-        <img src="images/horse/rampant-oxblood-light.webp" alt="" draggable="false" style="--i:4">
-        <img src="images/horse/rampant-navy-dark.webp" alt="" draggable="false" style="--i:5">
+        <span class="card" style="--i:0;--y:7%"><img src="images/horse/rampant-olive-light.webp" alt="" draggable="false"></span>
+        <span class="card" style="--i:1"><img src="images/horse/rampant-oxblood-dark.webp" alt="" draggable="false"></span>
+        <span class="card" style="--i:2"><img src="images/horse/rampant-navy-light.webp" alt="" draggable="false"></span>
+        <span class="card" style="--i:3"><img src="images/horse/rampant-olive-dark.webp" alt="" draggable="false"></span>
+        <span class="card" style="--i:4"><img src="images/horse/rampant-oxblood-light.webp" alt="" draggable="false"></span>
+        <span class="card" style="--i:5"><img src="images/horse/rampant-navy-dark.webp" alt="" draggable="false"></span>
       </button>
       <div class="coll-info">
         <h3 class="coll-name">The Rampant</h3>
