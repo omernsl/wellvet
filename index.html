@@ -18,7 +18,7 @@
     --accent-on:#FBFAF8;
     --glow-op:.62;
     --wp-ratio:9/16;  /* wallpaper export ratio */
-    --glass:rgba(234,234,230,.62);
+    --glass:rgba(250,250,247,.38);--glass-rim:rgba(255,255,255,.95);--glass-hi:rgba(255,255,255,.7);--glass-shadow:rgba(20,20,18,.18);
     --glass-edge:rgba(11,11,10,.06);
     --linen:#EDE5D6;
     --thread:#454833;
@@ -34,7 +34,7 @@
       --ink:#F3F2EE;--ink-soft:#C9C8C2;--muted:#807F78;
       --rule:rgba(243,242,238,.16);--rule-soft:rgba(243,242,238,.08);
       --accent:#9EA07E;--accent-on:#0B0B0A;--glow-op:.7;--glow-op:.7;
-      --glass:rgba(26,26,24,.62);--glass-edge:rgba(243,242,238,.08);
+      --glass:rgba(34,34,31,.38);--glass-rim:rgba(255,255,255,.55);--glass-hi:rgba(255,255,255,.22);--glass-shadow:rgba(0,0,0,.5);--glass-edge:rgba(243,242,238,.08);
     }
   }
   :root[data-theme="dark"]{
@@ -43,7 +43,7 @@
     --ink:#F3F2EE;--ink-soft:#C9C8C2;--muted:#807F78;
     --rule:rgba(243,242,238,.16);--rule-soft:rgba(243,242,238,.08);
     --accent:#9EA07E;--accent-on:#0B0B0A;
-    --glass:rgba(26,26,24,.62);--glass-edge:rgba(243,242,238,.08);
+    --glass:rgba(34,34,31,.38);--glass-rim:rgba(255,255,255,.55);--glass-hi:rgba(255,255,255,.22);--glass-shadow:rgba(0,0,0,.5);--glass-edge:rgba(243,242,238,.08);
   }
 
   *{box-sizing:border-box}
@@ -67,12 +67,33 @@
     left:50%;transform:translateX(-50%);
     width:min(72%,1100px);height:58px;
     display:flex;align-items:center;justify-content:center;
-    border-radius:999px;
-    background:var(--glass);
-    -webkit-backdrop-filter:blur(20px) saturate(1.3);
-    backdrop-filter:blur(20px) saturate(1.3);
-    border:1px solid var(--glass-edge);
+    border-radius:999px;overflow:hidden;isolation:isolate;
+    background:
+      linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0) 60%),
+      var(--glass);
+    -webkit-backdrop-filter:blur(26px) saturate(1.9) brightness(1.06);
+    backdrop-filter:blur(26px) saturate(1.9) brightness(1.06);
+    box-shadow:
+      inset 0 1px 0 var(--glass-hi),
+      inset 0 -1px 0 rgba(255,255,255,.06),
+      0 10px 34px -14px var(--glass-shadow),
+      0 1px 2px rgba(0,0,0,.05);
   }
+  /* liquid-glass rim: a 1px gradient stroke that catches light at two corners */
+  .bar::before{
+    content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;z-index:2;pointer-events:none;
+    background:linear-gradient(115deg,var(--glass-rim) 0%,rgba(255,255,255,.18) 22%,rgba(255,255,255,0) 45%,rgba(255,255,255,0) 60%,rgba(255,255,255,.22) 82%,var(--glass-rim) 100%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;
+  }
+  /* specular sheen that follows the pointer */
+  .bar::after{
+    content:"";position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;
+    background:radial-gradient(180px 60px at var(--mx,30%) -10%,rgba(255,255,255,.35),rgba(255,255,255,0) 70%);
+    opacity:.55;transition:opacity .4s ease;
+  }
+  .bar:hover::after{opacity:1}
+  .bar .mark{position:relative;z-index:3}
   .bar .mark{
     font-family:var(--display);font-weight:900;
     font-size:46px;line-height:1;color:var(--ink);
@@ -322,11 +343,49 @@
   .foot a:hover{color:var(--accent)}
   .colophon{margin-top:22px;font-size:11px;color:var(--muted);letter-spacing:.04em}
 
+  /* ================= motion (only when JS adds .anim and motion is allowed) ================= */
+  @keyframes barIn{from{opacity:0;transform:translate(-50%,-30px) scale(.96)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
+  @keyframes markIn{from{opacity:0;filter:blur(10px);transform:translateY(.117em) scale(.86)}to{opacity:1;filter:blur(0);transform:translateY(.117em) scale(1)}}
+  @keyframes riseIn{from{opacity:0;transform:translateY(56px) scale(.975)}to{opacity:1;transform:none}}
+  @keyframes kenburns{from{transform:scale(1.14)}to{transform:scale(1.02)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes cueIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  @keyframes caretBlink{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+  html.anim .bar{animation:barIn 1.2s cubic-bezier(.16,.8,.24,1) .15s both}
+  html.anim .bar .mark{animation:markIn 1.3s cubic-bezier(.16,.8,.24,1) .45s both}
+  html.anim .panel-wrap{animation:riseIn 1.5s cubic-bezier(.16,.8,.24,1) both}
+  html.anim .panel-wrap:nth-child(1){animation-delay:.55s}
+  html.anim .panel-wrap:nth-child(2){animation-delay:.75s}
+  html.anim .panel img{animation:kenburns 3.2s cubic-bezier(.2,.6,.2,1) .55s both}
+  html.anim .panel-wrap .glow{animation:fadeIn 2.2s ease 1.3s both}
+  html.anim .cue{animation:cueIn 1.1s cubic-bezier(.16,.8,.24,1) 1.7s both}
+  .panels{will-change:transform}
+
+  /* scroll reveals */
+  html.anim .rv{opacity:0;transform:translateY(28px);filter:blur(6px);
+    transition:opacity 1s cubic-bezier(.16,.8,.24,1),transform 1s cubic-bezier(.16,.8,.24,1),filter 1s ease;
+    transition-delay:var(--d,0ms)}
+  html.anim .rv.in{opacity:1;transform:none;filter:none}
+
+  /* typewriter */
+  .tw .ch{visibility:hidden}
+  .tw .ch.on{visibility:visible}
+  .caret{display:inline-block;width:0;position:relative}
+  .caret::after{content:"";position:absolute;left:.04em;bottom:.08em;width:.06em;min-width:2px;height:.92em;background:currentColor;animation:caretBlink .9s steps(1) infinite}
+  .caret.typing::after{animation:none}
+  .caret.gone{opacity:0;transition:opacity .5s ease}
+
+  /* fan deals out from a single deck */
+  html.anim .fan:not(.in) img{opacity:0;transform:translateX(calc((2.5 - var(--i)) * 46.7%)) translateY(14%) rotate(0deg)}
+  html.anim .fan:not(.settled) img{transition:transform 1.1s cubic-bezier(.16,.8,.24,1) calc(var(--i) * 90ms),opacity .7s ease calc(var(--i) * 90ms)}
+
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{transition-duration:.01ms!important;animation:none!important}
   }
 </style>
 
+<script>try{if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("anim")}catch(e){}</script>
 <a class="bar" href="#top" aria-label="Wellvet — back to top"><span class="mark">W</span></a>
 
 <main id="top">
@@ -584,6 +643,60 @@
 
     /* warm the cache so switching is instant: glows now (they are ~1 KB), previews after load */
     window.addEventListener('load',function(){RAMPANT.forEach(function(c){[c.light,c.dark].forEach(function(f){var i=new Image();i.src='images/horse/'+f;if(i.decode)i.decode().catch(function(){});});});});
+  })();
+  /* ================= motion ================= */
+  (function(){
+    var root=document.documentElement;
+    var bar=document.querySelector('.bar');
+    bar.addEventListener('pointermove',function(e){
+      var r=bar.getBoundingClientRect(); bar.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');
+    });
+    if(!root.classList.contains('anim')) return;
+
+    /* typewriter for Butler headings */
+    var tws=document.querySelectorAll('.intro h2,.sec-head h2');
+    tws.forEach(function(h){
+      var text=h.textContent; h.setAttribute('aria-label',text); h.textContent=''; h.classList.add('tw');
+      for(var i=0;i<text.length;i++){ var c=document.createElement('span'); c.className='ch'; c.setAttribute('aria-hidden','true'); c.textContent=text[i]; h.appendChild(c); }
+    });
+    function type(h){
+      var chars=h.querySelectorAll('.ch'), caret=document.createElement('span'), i=0;
+      caret.className='caret typing'; caret.setAttribute('aria-hidden','true');
+      h.insertBefore(caret,chars[0]);
+      var step=Math.max(22,Math.min(60,1500/chars.length));
+      (function tick(){
+        if(i<chars.length){ chars[i].classList.add('on'); h.insertBefore(caret,chars[i].nextSibling); i++; setTimeout(tick,step+(Math.random()*step*.5)); }
+        else { caret.classList.remove('typing'); setTimeout(function(){caret.classList.add('gone'); setTimeout(function(){caret.remove();},600);},1800); }
+      })();
+    }
+
+    /* scroll reveals, staggered within each group */
+    var groups=[
+      '.intro > div > p, .intro .cta, .intro .device',
+      '.coll-info > *',
+      '.craft-row',
+      '#library p, #library .btn',
+      'footer .foot, footer .colophon'
+    ];
+    groups.forEach(function(sel){ document.querySelectorAll(sel).forEach(function(el,i){ el.classList.add('rv'); el.style.setProperty('--d',(i*110)+'ms'); }); });
+
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(!e.isIntersecting) return;
+        var el=e.target; io.unobserve(el);
+        if(el.classList.contains('tw')) type(el);
+        else if(el.classList.contains('fan')){ el.classList.add('in'); setTimeout(function(){el.classList.add('settled');},1800); }
+        else el.classList.add('in');
+      });
+    },{threshold:.25,rootMargin:'0px 0px -8% 0px'});
+    document.querySelectorAll('.tw,.rv,.fan').forEach(function(el){io.observe(el);});
+
+    /* gentle parallax on the opening photographs */
+    var panels=document.querySelector('.panels'), ticking=false;
+    window.addEventListener('scroll',function(){
+      if(ticking) return; ticking=true;
+      requestAnimationFrame(function(){ var y=Math.min(window.scrollY,900); panels.style.transform='translate3d(0,'+(y*.12)+'px,0)'; ticking=false; });
+    },{passive:true});
   })();
   /* detail window: open from the card, the hero button, or a #rampant link */
   (function(){
