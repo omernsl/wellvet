@@ -289,11 +289,11 @@
     position:absolute;top:12%;left:calc(var(--i) * 14%);width:30%;height:auto;aspect-ratio:9/16;object-fit:cover;
     border-radius:clamp(10px,1.3vw,18px);-webkit-user-drag:none;
     box-shadow:0 1px 2px rgba(0,0,0,.22),0 8px 16px -6px rgba(0,0,0,.35),0 30px 50px -22px rgba(0,0,0,.6);
-    transform-origin:50% 130%;transform:rotate(calc((var(--i) - 2.5) * 4deg));
+    transform-origin:50% 130%;transform:translateY(var(--y,0%)) rotate(calc((var(--i) - 2.5) * 4deg));
     transition:transform .65s cubic-bezier(.22,1,.36,1),box-shadow .65s cubic-bezier(.22,1,.36,1);
   }
-  .fan.settled img:hover,html:not(.anim) .fan img:hover{transform:rotate(calc((var(--i) - 2.5) * 4deg)) translateY(-9%);box-shadow:0 1px 2px rgba(0,0,0,.22),0 14px 24px -8px rgba(0,0,0,.4),0 44px 60px -24px rgba(0,0,0,.65)}
-  @media (hover:none){.fan.settled img:hover,html:not(.anim) .fan img:hover{transform:rotate(calc((var(--i) - 2.5) * 4deg))}}
+  .fan.settled img:hover,html:not(.anim) .fan img:hover{transform:translateY(calc(var(--y,0%) - 9%)) rotate(calc((var(--i) - 2.5) * 4deg));box-shadow:0 1px 2px rgba(0,0,0,.22),0 14px 24px -8px rgba(0,0,0,.4),0 44px 60px -24px rgba(0,0,0,.65)}
+  @media (hover:none){.fan.settled img:hover,html:not(.anim) .fan img:hover{transform:translateY(var(--y,0%)) rotate(calc((var(--i) - 2.5) * 4deg))}}
   .coll-name{font-family:"Inter",-apple-system,"Helvetica Neue",Arial,sans-serif;font-weight:700;font-size:clamp(30px,3.4vw,44px);letter-spacing:-.025em;line-height:1.05;margin:0}
   .coll-meta{margin:14px 0 0;font-size:15px;color:var(--muted)}
   .coll-dots{display:flex;gap:10px;margin-top:22px}
@@ -471,7 +471,7 @@
     <div class="sec-head"><h2 class="big">Collections</h2></div>
     <article class="coll">
       <button class="fan" type="button" data-open aria-label="Open The Rampant" oncontextmenu="return false">
-        <img src="images/horse/rampant-olive-light.webp" alt="" draggable="false" style="--i:0">
+        <img src="images/horse/rampant-olive-light.webp" alt="" draggable="false" style="--i:0;--y:7%">
         <img src="images/horse/rampant-oxblood-dark.webp" alt="" draggable="false" style="--i:1">
         <img src="images/horse/rampant-navy-light.webp" alt="" draggable="false" style="--i:2">
         <img src="images/horse/rampant-olive-dark.webp" alt="" draggable="false" style="--i:3">
@@ -628,9 +628,9 @@
       var chars=h.querySelectorAll('.ch'), caret=document.createElement('span'), i=0;
       caret.className='caret typing'; caret.setAttribute('aria-hidden','true');
       h.insertBefore(caret,chars[0]);
-      var step=Math.max(22,Math.min(60,1500/chars.length));
+      var step=Math.max(14,Math.min(36,850/chars.length));
       (function tick(){
-        if(i<chars.length){ chars[i].classList.add('on'); h.insertBefore(caret,chars[i].nextSibling); i++; setTimeout(tick,step+(Math.random()*step*.5)); }
+        if(i<chars.length){ chars[i].classList.add('on'); h.insertBefore(caret,chars[i].nextSibling); i++; setTimeout(tick,step+(Math.random()*step*.35)); }
         else { caret.classList.remove('typing'); setTimeout(function(){caret.classList.add('gone'); setTimeout(function(){caret.remove();},600);},1800); }
       })();
     }
