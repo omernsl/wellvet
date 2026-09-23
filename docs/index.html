@@ -107,6 +107,7 @@
     margin:0;aspect-ratio:4/3;max-width:100%;
     border-radius:clamp(20px,2.1vw,40px);
     background:var(--panel);overflow:hidden;position:relative;
+    clip-path:inset(0 round clamp(20px,2.1vw,40px));
     display:grid;place-items:center;
     transition:background .35s ease;
   }
@@ -173,7 +174,7 @@
   /* ---------- phone ---------- */
   .device{width:280px;justify-self:center;margin:0}
   .screen{
-    position:relative;aspect-ratio:9/19.5;border-radius:38px;overflow:hidden;
+    position:relative;aspect-ratio:9/19.5;border-radius:38px;overflow:hidden;clip-path:inset(0 round 38px);
     background:var(--linen);border:1px solid rgba(11,11,10,.3);
     box-shadow:0 24px 60px -34px rgba(11,11,10,.6);
   }
@@ -212,11 +213,13 @@
   .config{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:clamp(40px,7vw,110px);align-items:center}
   @media (max-width:820px){.config{grid-template-columns:1fr}.stage-wrap{max-width:320px;width:100%;margin-inline:auto}}
   .stage-wrap{position:relative;isolation:isolate}
-  .stage-wrap .glow{transition:opacity .6s ease}
+  .stage-wrap::after{content:"";position:absolute;inset:0;z-index:0;border-radius:clamp(16px,1.8vw,26px);box-shadow:0 30px 60px -40px rgba(11,11,10,.7);pointer-events:none}
+  .stage-wrap .glow{opacity:0;transition:opacity .6s ease;will-change:opacity}
+  .stage-wrap .glow.on{opacity:var(--glow-op)}
   .stage{
     position:relative;z-index:1;aspect-ratio:var(--wp-ratio);max-width:100%;
     border-radius:clamp(16px,1.8vw,26px);overflow:hidden;background:var(--panel);
-    box-shadow:0 30px 60px -40px rgba(11,11,10,.7);
+    clip-path:inset(0 round clamp(16px,1.8vw,26px));
   }
   .stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .6s ease}
   .stage img.on{opacity:1}
@@ -292,16 +295,16 @@
     <div class="panels">
       <!-- Images live in images/ ; bump the -vN suffix whenever they change, to defeat caching -->
       <div class="panel-wrap">
-        <img class="glow" src="images/brand-01-v2.webp" alt="" aria-hidden="true" onerror="this.remove()">
+        <img class="glow" src="images/brand-01-glow.webp" alt="" aria-hidden="true" onerror="this.remove()">
         <figure class="panel">
           <img src="images/brand-01-v2.webp" alt="Wellvet brand image" onerror="this.remove()">
           <span class="slot">Brand image 01</span>
         </figure>
       </div>
       <div class="panel-wrap">
-        <img class="glow" src="images/brand-02-v2.webp" alt="" aria-hidden="true" onerror="this.remove()">
+        <img class="glow" src="images/brand-02-glow.webp" alt="" aria-hidden="true" onerror="this.remove()">
         <figure class="panel">
-          <img src="images/brand-02-v2.webp" alt="Wellvet brand image" onerror="this.remove()">
+          <img src="images/brand-02-v3.webp" alt="Wellvet brand image" onerror="this.remove()">
           <span class="slot">Brand image 02</span>
         </figure>
       </div>
@@ -374,7 +377,8 @@
     <div class="sec-head"><h2>The Rampant</h2><p class="label">Horse collection · 3 colours · light &amp; dark</p></div>
     <div class="config">
       <div class="stage-wrap">
-        <img class="glow" id="stage-glow" src="images/horse/rampant-olive-light.webp" alt="" aria-hidden="true">
+        <img class="glow on" src="images/horse/rampant-olive-light-glow.webp" alt="" aria-hidden="true">
+        <img class="glow" src="" alt="" aria-hidden="true">
         <div class="stage" id="stage" data-view="lock" data-tone="light" oncontextmenu="return false">
           <img class="on" src="images/horse/rampant-olive-light.webp" alt="The Rampant wallpaper, Olive, light" draggable="false">
           <img src="" alt="" aria-hidden="true" draggable="false">
@@ -477,24 +481,28 @@
   (function(){
     var state={colour:RAMPANT[0],tone:'light'};
     var layers=document.querySelectorAll('.stage img');
-    var glow=document.getElementById('stage-glow');
+    var glows=document.querySelectorAll('.stage-wrap .glow');
     var label=document.getElementById('now-name');
     var sw=document.getElementById('swatches');
-    var front=0;
+    var front=0, seq=0;
 
     function src(){return 'images/horse/'+state.colour[state.tone];}
     function title(){return state.colour.name+' · '+(state.tone==='light'?'Light':'Dark');}
+    function ready(img){return img.decode?img.decode().catch(function(){}):Promise.resolve();}
 
     function show(){
-      var next=layers[1-front], cur=layers[front], url=src();
-      next.onload=function(){
+      var url=src(), gurl=url.replace('.webp','-glow.webp'), token=++seq;
+      var next=layers[1-front], cur=layers[front], gn=glows[1-front], gc=glows[front];
+      next.src=url; gn.src=gurl;
+      label.textContent=title();
+      Promise.all([ready(next),ready(gn)]).then(function(){
+        if(token!==seq) return;              /* a newer choice won; drop this one */
         next.classList.add('on'); cur.classList.remove('on');
+        gn.classList.add('on');   gc.classList.remove('on');
         next.alt='The Rampant wallpaper, '+title(); next.removeAttribute('aria-hidden');
         cur.setAttribute('aria-hidden','true'); cur.alt='';
-        front=1-front; glow.src=url;
-      };
-      next.src=url;
-      label.textContent=title();
+        front=1-front;
+      });
     }
 
     RAMPANT.forEach(function(c,i){
@@ -532,8 +540,9 @@
     });
     try{document.getElementById('ov-date').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});}catch(e){}
 
-    /* warm the cache so switching is instant */
-    setTimeout(function(){RAMPANT.forEach(function(c){[c.light,c.dark].forEach(function(f){new Image().src='images/horse/'+f;});});},1200);
+    /* warm the cache so switching is instant: glows now (they are ~1 KB), previews after load */
+    RAMPANT.forEach(function(c){[c.light,c.dark].forEach(function(f){new Image().src='images/horse/'+f.replace('.webp','-glow.webp');});});
+    window.addEventListener('load',function(){RAMPANT.forEach(function(c){[c.light,c.dark].forEach(function(f){var i=new Image();i.src='images/horse/'+f;if(i.decode)i.decode().catch(function(){});});});});
   })();
   (function(){
     var screenEl=document.getElementById('screen');
