@@ -1,0 +1,8 @@
+# originals and product files never go public
+images/horse/*.png
+images/**/*.png
+*.zip
+fonts/
+local.html
+.DS_Store
+_*.html
