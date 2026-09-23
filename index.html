@@ -398,6 +398,7 @@
   }
 </style>
 
+<script src="https://app.lemonsqueezy.com/js/lemon.js" defer></script>
 <script>try{if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("anim")}catch(e){}</script>
 <a class="bar" href="#top" aria-label="Wellvet — back to top"><span class="mark">W</span></a>
 
@@ -509,7 +510,7 @@
   <section class="wrap" id="library">
     <div class="sec-head"><h2>Your library never expires</h2><p class="label">Already purchased</p></div>
     <p style="max-width:58ch;margin:0 0 26px;color:var(--ink-soft)">Enter the email you used at checkout and a sign-in link will be sent to you. No password, no account to create — every file you have bought, plus anything added since.</p>
-    <button class="btn" type="button">Open your library</button>
+    <a class="btn" href="https://app.lemonsqueezy.com/my-orders" target="_blank" rel="noopener">Open your library</a>
   </section>
 
 </main>
@@ -545,7 +546,7 @@
       </div>
       <div class="buyrow">
         <div class="price"><sup>$</sup>4.90</div>
-        <a class="btn buy" href="#" data-checkout>Buy all 6 wallpapers</a>
+        <a class="btn buy" href="https://wellvet.lemonsqueezy.com/checkout/buy/e54d8b20-b542-4bdd-9a18-ed4d4a4cdaed" data-checkout>Buy all 6 wallpapers</a>
       </div>
       <p class="fine">One-time payment, tax handled at checkout. The download link arrives by email.</p>
     </div>
@@ -679,6 +680,10 @@
       requestAnimationFrame(function(){ var y=Math.min(window.scrollY,900); panels.style.transform='translate3d(0,'+(y*.12)+'px,0)'; ticking=false; });
     },{passive:true});
   })();
+  /* ---- Lemon Squeezy: the one place to change when the checkout moves (e.g. test -> live) ---- */
+  var CHECKOUT_URL='https://wellvet.lemonsqueezy.com/checkout/buy/e54d8b20-b542-4bdd-9a18-ed4d4a4cdaed';
+  window.addEventListener('load',function(){ if(window.createLemonSqueezy) createLemonSqueezy(); });
+
   /* detail window: open from the card, the hero button, or a #rampant link */
   (function(){
     var dlg=document.getElementById('rampant');
@@ -694,7 +699,12 @@
       var t=e.target.closest('[data-open],a[href="#rampant"]');
       if(t){ e.preventDefault(); open(); }
       var c=e.target.closest('[data-checkout]');
-      if(c){ e.preventDefault(); }   /* wired to Lemon Squeezy once the checkout link exists */
+      if(c){
+        e.preventDefault();
+        if(dlg.open) dlg.close();
+        if(window.LemonSqueezy && LemonSqueezy.Url) LemonSqueezy.Url.Open(CHECKOUT_URL);
+        else location.href=CHECKOUT_URL;   /* lemon.js blocked or not loaded yet: go to the hosted checkout */
+      }
     });
     if(location.hash==='#rampant') open();
   })();
